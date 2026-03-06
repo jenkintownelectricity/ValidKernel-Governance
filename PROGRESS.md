@@ -23,9 +23,11 @@ VKG governance is CI-enforced: `.github/workflows/vkg-governance-check.yml` vali
 
 VKG Installer: `.validkernel/tools/install-vkg.py` deploys the governance kernel into target repositories (ShopDrawing.AI, construction_dna, SUPA-SAINT, etc.).
 
+Repository architecture separates: specifications (`docs/validkernel/`), canonical artifacts (`canon/`), runtime kernel (`.validkernel/tools/`), live state (`.validkernel/state/`), and history (`.validkernel/receipts/`, `.validkernel/registry/`).
+
 ---
 
-## Command Registry (24 Commands)
+## Command Registry (26 Commands)
 
 | # | Command ID | Description | Status | Key Commit |
 |---|------------|-------------|--------|------------|
@@ -54,6 +56,7 @@ VKG Installer: `.validkernel/tools/install-vkg.py` deploys the governance kernel
 | 23 | L0-CMD-VKG-CI-ENFORCEMENT-001 | CI enforcement for VKG receipt and registry validation | COMPLETE | 0402813 |
 | 24 | L0-CMD-VKRT-EXECUTABLE-001 | Executable VKRT for pre-execution command validation | COMPLETE | 24a41a9 |
 | 25 | L0-CMD-VKG-INSTALLER-001 | VKG installer for deterministic kernel deployment | COMPLETE | — |
+| 26 | L0-CMD-VKG-STRUCTURE-001 | Canon and runtime state structure | COMPLETE | — |
 
 ---
 

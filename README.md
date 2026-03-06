@@ -6,12 +6,12 @@ It provides a structured command protocol, a pre-execution runtime gate, executi
 
 ## Core execution loop
 
-command  
-→ runtime gate  
-→ execution  
-→ receipt  
-→ registry  
-→ validator  
+command
+→ runtime gate
+→ execution
+→ receipt
+→ registry
+→ validator
 → CI
 
 ## What this repository contains
@@ -45,6 +45,19 @@ Includes:
 - `registry/` — active command registry and legacy registry history
 - `receipts/` — command execution receipts
 - `tools/` — governance tooling
+- `state/` — live governance state
+
+### Canonical governance artifacts
+
+Located in:
+
+`canon/`
+
+Includes:
+
+- `commands/` — canonical command documents
+- `install/` — install-related canonical artifacts
+- `patterns/` — reusable governance patterns
 
 ### Governance CI
 
@@ -53,6 +66,18 @@ Located in:
 `.github/workflows/vkg-governance-check.yml`
 
 This workflow validates governance state on push and pull request.
+
+## Repository structure
+
+| Directory | Purpose |
+|-----------|---------|
+| `docs/validkernel/` | Governance specifications and documentation |
+| `canon/` | Canonical governance artifacts (authoritative commands, patterns) |
+| `.validkernel/tools/` | Runtime governance kernel (gate, validator, installer) |
+| `.validkernel/state/` | Live governance state (repo-state, runtime-state) |
+| `.validkernel/registry/` | Command registry |
+| `.validkernel/receipts/` | Execution history |
+| `.validkernel/authority/` | Portable authority identity |
 
 ## Included tools
 
@@ -99,3 +124,20 @@ Validate a command:
 
 ```powershell
 python .validkernel\tools\runtime-gate.py docs\validkernel\examples\sample-command.md
+```
+
+Install governance into another repository:
+
+```powershell
+python .validkernel\tools\install-vkg.py --target-repo D:\repos\SomeRepo --initialize-authority --initialize-registry
+```
+
+Validate all receipts:
+
+```powershell
+python .validkernel\tools\validate-all-receipts.py
+```
+
+## License
+
+Proprietary — Lefebvre Design Solutions LLC. All rights reserved.
