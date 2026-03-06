@@ -273,6 +273,26 @@ Creates or updates command receipts and registry entries.
 ### `install-vkg.py`
 Installs the ValidKernel governance kernel into another repository.
 
+### `verify-governance-docs.py`
+Verifies that governance documentation satisfies the Ring 2 deterministic checkpoint. Runs automatically in CI when governance-critical files change. Can also be run locally.
+
+## Continuous Governance Gate
+
+Changes to governance-critical documentation are automatically checked in CI before merge. The Continuous Governance Gate detects when governance-critical files are modified and runs a deterministic Ring 2 verification against the documentation set.
+
+- Governance-critical changes are automatically detected
+- Failed governance checks block merge
+- Documentation changes can be governance-critical
+- The gate is deterministic and evidence-based
+
+Run the gate locally:
+
+```bash
+python .validkernel/tools/verify-governance-docs.py
+```
+
+See `docs/validkernel/governance-tools.md` for the full list of governance-critical paths and checklist items.
+
 ## Portable authority
 
 Portable authority is defined in:
