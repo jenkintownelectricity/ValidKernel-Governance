@@ -1,0 +1,25 @@
+{
+    "registry_version":  "0.1",
+    "repository":  "ValidKernel-Governance",
+    "last_updated":  "2026-03-06T00:00:00Z",
+    "commands":  [
+                     {
+                         "command_id":  "L0-CMD-VKRT-WINDOWS-FIX-001",
+                         "title":  "Correct VKRT file input handling and UTF-8 reading",
+                         "authority":  "Armand Lefebvre",
+                         "organization":  "Lefebvre Design Solutions LLC",
+                         "date_issued":  "2026-03-06",
+                         "repository":  "ValidKernel-Governance",
+                         "branch":  "main",
+                         "commit_hash":  "447b217",
+                         "status":  "EXECUTED",
+                         "gate_result":  "PASS",
+                         "receipt_path":  "",
+                         "receipt_status":  "NONE",
+                         "supersedes":  "",
+                         "superseded_by":  "",
+                         "next_action":  "Create first repo-native receipt and normalize governance history",
+                         "last_updated":  "2026-03-06T00:00:00Z"
+                     }
+                 ]
+}

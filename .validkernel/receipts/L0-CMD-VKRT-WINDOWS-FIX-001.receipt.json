@@ -1,0 +1,22 @@
+{
+    "receipt_version":  "0.1",
+    "command_id":  "L0-CMD-VKRT-WINDOWS-FIX-001",
+    "authority":  "Armand Lefebvre",
+    "organization":  "Lefebvre Design Solutions LLC",
+    "issued_at":  "2026-03-06",
+    "executed_at":  "2026-03-06T08:25:49Z",
+    "repository":  "ValidKernel-Governance",
+    "branch":  "main",
+    "commit_hash":  "447b217",
+    "status":  "EXECUTED",
+    "gate_result":  "PASS",
+    "files_changed":  [
+                          "path/to/file1",
+                          "path/to/file2"
+                      ],
+    "summary":  "Corrected VKRT file input handling and UTF-8 reading in the standalone ValidKernel-Governance repository.",
+    "blocked_reason":  "",
+    "next_action":  "Proceed to implement VKG installer and command generator.",
+    "signer":  "repository | L0 | CI | manual | agent",
+    "signature_status":  "UNSIGNED | REPO_VERIFIED | FUTURE_CRYPTO_REQUIRED"
+}
