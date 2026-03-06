@@ -1256,3 +1256,35 @@ Built the complete SVG-based CAD editor for in-browser shop drawing production. 
 - VKRT is now the first executable checkpoint in the VKG pipeline
 - Full executable governance sequence: command → runtime-gate.py → execution → receipt → registry → validator → CI
 - Command structure validation is deterministic and automatable
+
+---
+
+## Session — VKG Installer (2026-03-06)
+
+**Command:** L0-CMD-VKG-INSTALLER-001
+**Branch:** `claude/governance-installer-docs-auqd3`
+
+### Changes Made
+
+1. **Created `.validkernel/tools/install-vkg.py`** — VKG kernel installer
+   - Installs governance kernel (docs/validkernel/, .validkernel/tools/, .github/workflows/) into target repositories
+   - `--target-repo` required flag specifying target git repository path
+   - `--force` flag to overwrite existing governance files
+   - `--initialize-authority` creates blank authority.json in target
+   - `--initialize-registry` creates empty command-registry.json in target
+   - `--create-install-receipt` creates install receipt and updates registry
+   - Fail-closed: rejects non-existent paths, non-git targets, missing source files, overwrites without --force
+   - Post-install validation verifies required artifacts exist
+   - UTF-8 safe file copying, standard library only, no network access
+
+2. **Updated `docs/validkernel/governance-tools.md`** — Added VKG Installer section (section 9)
+
+3. **Updated `README.md`** — Added VKG installer reference
+4. **Updated `CLAUDE_LOG.md`** — This session entry
+5. **Updated `HANDOFF.md`** — Added VKG installer reference
+6. **Updated `PROGRESS.md`** — Added command 25 (VKG installer)
+
+### Architectural Outcome
+- ValidKernel Governance is now portable — the installer deploys the governance kernel into any target git repository
+- Target repositories: ShopDrawing.AI, construction_dna, SUPA-SAINT, future governed repositories
+- Full governance lifecycle: source repo → install-vkg.py → target repo → runtime gate → execution → receipt → registry → validator → CI

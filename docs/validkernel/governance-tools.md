@@ -20,6 +20,7 @@ command → runtime gate → execution → receipt → registry update → verif
 |------|-------|---------|
 | `validate-receipt.py` | Verification | Validates receipt against VKG v0.1 |
 | `update-governance-record.py` | Receipt + Registry Update | Creates/updates receipt and registry |
+| `install-vkg.py` | Deployment | Installs governance kernel into target repositories |
 
 ---
 
@@ -30,6 +31,7 @@ command → runtime gate → execution → receipt → registry update → verif
   tools/
     validate-receipt.py            # Receipt validator
     update-governance-record.py    # Receipt/registry auto-updater
+    install-vkg.py                 # VKG kernel installer
   receipts/                        # Receipt JSON storage
   registry/
     command-registry.json          # Canonical command registry
@@ -417,7 +419,118 @@ The runtime gate is the first tool in the VKG pipeline. It runs before execution
 
 ---
 
-## 9. Requirements
+## 9. VKG Installer
+
+### Overview
+
+Installs the ValidKernel Governance kernel from the ValidKernel-Governance source repository into a target repository. The installer copies governance kernel paths deterministically, preserves directory structure, and fails closed on invalid input or overwrite risk.
+
+Intended for deploying governance into repositories such as ShopDrawing.AI, construction_dna, SUPA-SAINT, and future governed repositories.
+
+### Required Flags
+
+| Flag | Description |
+|------|-------------|
+| `--target-repo <path>` | Path to the target git repository (required) |
+
+### Optional Flags
+
+| Flag | Description |
+|------|-------------|
+| `--force` | Overwrite existing governance files in the target |
+| `--initialize-authority` | Create a blank `authority.json` if none exists in target |
+| `--initialize-registry` | Create an empty `command-registry.json` if none exists in target |
+| `--create-install-receipt` | Create an install receipt after successful install |
+
+### Installed Paths
+
+The installer copies the following kernel paths into the target:
+
+```
+docs/validkernel/          — governance documentation
+.validkernel/tools/        — governance tooling
+.github/workflows/vkg-governance-check.yml — CI enforcement
+```
+
+It does **not** copy source-specific files (receipts, registry, authority) unless explicitly initialized via flags.
+
+### Overwrite Behavior
+
+Default behavior is **fail-closed**:
+
+- Target repo does not exist → FAIL
+- Target path is not a git repository → FAIL
+- Required kernel source paths are missing → FAIL
+- Install would overwrite existing governance files → FAIL unless `--force` is provided
+
+### Authority Initialization
+
+If the target does not contain `.validkernel/authority/authority.json`, the installer creates a blank template only when `--initialize-authority` is provided. Existing authority is never overwritten unless `--force` is also provided.
+
+### Registry Initialization
+
+If the target does not contain `.validkernel/registry/command-registry.json`, the installer creates an empty registry only when `--initialize-registry` is provided:
+
+```json
+{
+  "registry_version": "0.1",
+  "repository": "<target repository name>",
+  "last_updated": "<install timestamp>",
+  "commands": []
+}
+```
+
+### Install Receipt
+
+When `--create-install-receipt` is provided, the installer creates a receipt at:
+
+```
+.validkernel/receipts/L0-CMD-VKG-INSTALL-001.receipt.json
+```
+
+If a registry exists, the matching entry is added or updated.
+
+### Post-Install Validation
+
+After installation, the installer verifies that the following exist in the target:
+
+- `docs/validkernel/vkg-spec.md`
+- `docs/validkernel/command-protocol.md`
+- `.validkernel/tools/runtime-gate.py`
+- `.validkernel/tools/validate-receipt.py`
+- `.github/workflows/vkg-governance-check.yml`
+
+If any required artifact is missing, the install is treated as FAIL.
+
+### Usage
+
+```bash
+python .validkernel/tools/install-vkg.py \
+  --target-repo /path/to/SomeRepo \
+  --initialize-authority \
+  --initialize-registry
+```
+
+Windows:
+
+```cmd
+python .validkernel/tools/install-vkg.py ^
+  --target-repo D:\APP_CENTRAL\SomeRepo ^
+  --initialize-authority ^
+  --initialize-registry ^
+  --create-install-receipt
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Successful install |
+| 1 | Install failed (errors printed) |
+
+---
+
+## 10. Requirements
 
 - Python 3.6+
 - Git (for automatic branch/commit detection)
