@@ -530,7 +530,24 @@ python .validkernel/tools/install-vkg.py ^
 
 ---
 
-## 10. Requirements
+## 10. Governance State
+
+### Overview
+
+Governance tools may read and update live state files to track the current status of the repository and runtime tooling.
+
+### State Files
+
+| File | Purpose |
+|------|---------|
+| `.validkernel/state/repo-state.json` | Tracks whether governance is installed, authority/registry/receipts are present, and CI is enforced |
+| `.validkernel/state/runtime-state.json` | Tracks readiness of runtime tools (gate, validator, installer, etc.) |
+
+These files provide a snapshot of the governance posture of the repository at any point in time. Tools may update `last_checked` or `last_updated` timestamps and tool readiness status as part of their normal operation.
+
+---
+
+## 11. Requirements
 
 - Python 3.6+
 - Git (for automatic branch/commit detection)

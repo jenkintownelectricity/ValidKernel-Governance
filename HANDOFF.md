@@ -162,6 +162,8 @@ VKG Installer: `.validkernel/tools/install-vkg.py` deploys the governance kernel
 
 VKG governance is CI-enforced: `.github/workflows/vkg-governance-check.yml` runs receipt and registry validation on every push and pull request.
 
+Repository architecture separates: kernel (`.validkernel/tools/`), canon (`canon/`), live state (`.validkernel/state/`), history (`.validkernel/receipts/`, `.validkernel/registry/`). Canon stores authoritative command artifacts; state tracks repo posture and runtime readiness.
+
 ---
 
 ## VERIFY STATE

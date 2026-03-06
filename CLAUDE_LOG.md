@@ -1288,3 +1288,34 @@ Built the complete SVG-based CAD editor for in-browser shop drawing production. 
 - ValidKernel Governance is now portable — the installer deploys the governance kernel into any target git repository
 - Target repositories: ShopDrawing.AI, construction_dna, SUPA-SAINT, future governed repositories
 - Full governance lifecycle: source repo → install-vkg.py → target repo → runtime gate → execution → receipt → registry → validator → CI
+
+---
+
+## Session — Canon and Runtime State Structure (2026-03-06)
+
+**Command:** L0-CMD-VKG-STRUCTURE-001
+**Branch:** `claude/governance-installer-docs-auqd3`
+
+### Changes Made
+
+1. **Created `canon/` directory structure**
+   - `canon/README.md` — explains canon as home for authoritative governance artifacts
+   - `canon/commands/` — for canonical command documents
+   - `canon/install/` — for install-related canonical artifacts
+   - `canon/patterns/` — for reusable governance patterns
+
+2. **Created `.validkernel/state/` directory structure**
+   - `repo-state.json` — tracks governance installation status, authority/registry/receipts presence, CI enforcement
+   - `runtime-state.json` — tracks readiness of runtime tools (gate, validator, installer, command generator)
+   - `.gitkeep` — ensures directory is tracked
+
+3. **Updated `README.md`** — Added repository structure table
+4. **Updated `docs/validkernel/governance-tools.md`** — Added section 10 (Governance State)
+5. **Updated `CLAUDE_LOG.md`** — This session entry
+6. **Updated `HANDOFF.md`** — Added architectural separation reference
+7. **Updated `PROGRESS.md`** — Added command 26 (VKG structure)
+
+### Architectural Outcome
+- Repository now cleanly separates: specs (docs), canon (canonical artifacts), kernel (tools), state (live posture), history (receipts/registry)
+- `docs/validkernel/examples/` remains for examples; `canon/commands/` is the future home for source-of-truth commands
+- No existing files were moved — structure only
