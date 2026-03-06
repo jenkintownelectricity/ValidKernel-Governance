@@ -530,7 +530,90 @@ python .validkernel/tools/install-vkg.py ^
 
 ---
 
-## 10. Governance State
+## 10. Continuous Governance Gate
+
+### Overview
+
+The Continuous Governance Gate automatically verifies that governance-critical documentation satisfies the Ring 2 deterministic checkpoint. It runs in CI on pull requests and pushes that modify governance-critical files and blocks merge when verification fails.
+
+### What Triggers the Gate
+
+The gate activates when any of the following governance-critical paths are changed:
+
+- `README.md`
+- `docs/validkernel/vkg-spec.md`
+- `docs/validkernel/command-protocol.md`
+- `docs/validkernel/command-execution-flow.md`
+- `docs/validkernel/command-receipts.md`
+- `docs/validkernel/command-registry.md`
+- `docs/validkernel/governance-tools.md`
+- `docs/validkernel/glossary.md`
+- `docs/validkernel/risk-classes.md`
+- `docs/validkernel/examples/`
+- `docs/validkernel/templates/`
+
+Changes outside these paths do not trigger the governance documentation gate.
+
+### What the Gate Checks
+
+The gate executes 21 Ring 2 checklist items covering:
+
+- VKG defined as governing Governed Environments
+- Git repositories stated as v0.1 reference implementation
+- Canonical governance loop wording preserved
+- Risk Class format compliance
+- Required files exist (glossary.md, risk-classes.md)
+- Glossary terminology consistency (all 16 required terms)
+- FAIL_CLOSED definition uses required wording
+- Execution warrant defined as Runtime Gate PASS
+- Runtime flow wording preserved exactly
+- Command Registry lifecycle states unchanged
+- Verification scoped to existing tooling
+- Plain-language summaries in major spec files
+- README diagrams and non-technical explanation
+- README canonical governance loop
+- Command example with Risk Class and all required sections
+- Command ring diagram with L0/L1/L2/L3
+- Real diagrams (not placeholders)
+- Documentation compatible with tooling
+- No speculative architecture text
+
+### PASS and FAIL Behavior
+
+**PASS** means all 21 checklist items are satisfied. The governance documentation is consistent and aligned with VKG specification requirements.
+
+**FAIL** means one or more checklist items failed. The output identifies which items failed and provides diagnostic evidence. Failed governance checks block merge eligibility.
+
+### Usage
+
+Run the verification locally before pushing:
+
+```bash
+python .validkernel/tools/verify-governance-docs.py
+```
+
+The same script runs automatically in CI via the `governance-docs-gate` job in `.github/workflows/vkg-governance-check.yml`.
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | All checks PASS |
+| 1 | One or more checks FAIL |
+
+### Position in CI
+
+```
+vkg-governance-check.yml
+  ├─ vkg-check            — receipt and registry validation (existing)
+  └─ governance-docs-gate — Ring 2 documentation verification (new)
+```
+
+The governance-docs-gate runs alongside the existing vkg-check job. It does not replace or weaken existing receipt and registry validation.
+
+---
+
+## 11. Governance State
 
 ### Overview
 
@@ -547,7 +630,7 @@ These files provide a snapshot of the governance posture of the repository at an
 
 ---
 
-## 11. Requirements
+## 12. Requirements
 
 - Python 3.6+
 - Git (for automatic branch/commit detection)

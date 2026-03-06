@@ -2,15 +2,15 @@
 
 **Specification v0.1**
 
-*Defines the deterministic runtime behavior of governed commands within ValidKernel Governance (VKG).*
+This specification defines the exact sequence of stages that every governed command must traverse from issuance to completion within a Governed Environment. The canonical runtime flow is: Command → Runtime Gate → Execution → Receipt → Registry Update. Each stage is mandatory and must produce its defined output before the next stage begins. The Runtime Gate determines whether execution is permitted; if it returns FAIL, execution is blocked. Every execution produces a receipt, and receipts are recorded in the Command Registry. The flow enforces FAIL_CLOSED semantics throughout: if any stage fails, no downstream stages execute.
 
 ---
 
 ## 1. Purpose
 
-This specification defines the exact sequence of stages that every governed command must traverse from issuance to completion. It ensures that command execution is deterministic, auditable, and reproducible.
+This specification defines the exact sequence of stages that every governed command must traverse from issuance to completion within a Governed Environment. It ensures that command execution is deterministic, auditable, and reproducible.
 
-The execution flow is the runtime backbone of VKG. Without it, commands are definitions without behavior.
+The execution flow is the runtime backbone of VKG. Without it, commands are definitions without behavior. Git repositories are the reference implementation of VKG in version 0.1.
 
 ---
 

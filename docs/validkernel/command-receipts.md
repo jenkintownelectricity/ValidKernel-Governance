@@ -6,6 +6,8 @@
 **Status:** Active
 **Parent:** ValidKernel Command Protocol v0.1
 
+Command Receipts provide the auditable record layer of ValidKernel Governance (VKG). Every governed command execution produces a receipt that captures what was commanded, what happened, what changed, and what should happen next. Receipts are stored as JSON files in `.validkernel/receipts/` and are indexed by the Command Registry. Together, receipts and the registry form a complete, verifiable execution history for a Governed Environment. Git repositories are the reference implementation of VKG in version 0.1.
+
 ---
 
 ## Purpose

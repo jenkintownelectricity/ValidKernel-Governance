@@ -6,11 +6,13 @@
 **Status:** Active
 **Parent:** ValidKernel Command Protocol v0.1
 
+The Command Registry is the canonical index of all governed commands and their lifecycle states within a Governed Environment. It provides a single, machine-readable source of truth that tracks which commands have been issued, their current status, which commands supersede others, and where their receipts are stored. The registry links to receipts but does not duplicate them, maintaining a clean separation between the summary index and the detailed execution records. Command Registry state reflects execution outcomes. Git repositories are the reference implementation of VKG in version 0.1.
+
 ---
 
 ## Purpose
 
-The Command Registry is the canonical index of all governed commands in a repository. It answers:
+The Command Registry is the canonical index of all governed commands within a Governed Environment. It answers:
 
 - **What commands have been issued?**
 - **What is the current status of each command?**
