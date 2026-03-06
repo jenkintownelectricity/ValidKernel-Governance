@@ -292,6 +292,8 @@ The ValidKernel Runtime Gate (VKRT) is executable at `.validkernel/tools/runtime
 
 VKG governance is CI-enforced via `.github/workflows/vkg-governance-check.yml` — receipt and registry validation runs on every push and pull request.
 
+The VKG Installer (`.validkernel/tools/install-vkg.py`) deploys the governance kernel into target repositories (ShopDrawing.AI, construction_dna, SUPA-SAINT, etc.) with fail-closed overwrite protection and optional authority, registry, and install receipt initialization.
+
 ```
 Command Format: ValidKernel Command Protocol v0.1
 ```

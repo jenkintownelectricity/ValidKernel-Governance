@@ -21,6 +21,8 @@ VKRT is executable: `.validkernel/tools/runtime-gate.py` — validates command s
 
 VKG governance is CI-enforced: `.github/workflows/vkg-governance-check.yml` validates receipts and registry on every push and pull request.
 
+VKG Installer: `.validkernel/tools/install-vkg.py` deploys the governance kernel into target repositories (ShopDrawing.AI, construction_dna, SUPA-SAINT, etc.).
+
 ---
 
 ## Command Registry (24 Commands)
@@ -51,6 +53,7 @@ VKG governance is CI-enforced: `.github/workflows/vkg-governance-check.yml` vali
 | 22 | L0-CMD-VKG-TOOLS-001 | VKG operational tooling: receipt validator + record updater | COMPLETE | cd0b0be |
 | 23 | L0-CMD-VKG-CI-ENFORCEMENT-001 | CI enforcement for VKG receipt and registry validation | COMPLETE | 0402813 |
 | 24 | L0-CMD-VKRT-EXECUTABLE-001 | Executable VKRT for pre-execution command validation | COMPLETE | 24a41a9 |
+| 25 | L0-CMD-VKG-INSTALLER-001 | VKG installer for deterministic kernel deployment | COMPLETE | — |
 
 ---
 

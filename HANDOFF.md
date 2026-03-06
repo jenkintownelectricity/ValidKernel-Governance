@@ -158,6 +158,8 @@ VKG operational tools: `.validkernel/tools/validate-receipt.py` (receipt validat
 
 VKRT is executable: `.validkernel/tools/runtime-gate.py` validates command structure before execution (16 structural checks, PASS/FAIL with `--json` option).
 
+VKG Installer: `.validkernel/tools/install-vkg.py` deploys the governance kernel into target repositories with fail-closed overwrite protection and optional authority, registry, and install receipt initialization. Target repos: ShopDrawing.AI, construction_dna, SUPA-SAINT, future governed repositories.
+
 VKG governance is CI-enforced: `.github/workflows/vkg-governance-check.yml` runs receipt and registry validation on every push and pull request.
 
 ---
