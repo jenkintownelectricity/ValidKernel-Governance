@@ -1,0 +1,21 @@
+name: VKG Governance Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  vkg-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate registry JSON
+        run: python -c "import json; json.load(open('.validkernel/registry/command-registry.json'))"
+
+      - name: Validate all VKG receipts
+        run: python .validkernel/tools/validate-all-receipts.py
