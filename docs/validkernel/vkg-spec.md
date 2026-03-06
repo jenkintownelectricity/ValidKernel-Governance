@@ -2,13 +2,13 @@
 
 **Specification v0.1**
 
-*A deterministic governance framework for coordinating human authority, AI execution, and verifiable system change.*
+ValidKernel Governance (VKG) is a deterministic governance system in which commands are validated by a Runtime Gate, executed within defined capability bounds, recorded through receipts, and indexed in the Command Registry to produce an auditable execution history. VKG provides a structured command protocol, a pre-execution runtime gate, execution receipts, a command registry, and validation tooling so that governed work can be tracked and verified consistently. This specification defines the governance model, components, and rules that apply to all Governed Environments operating under VKG. Git repositories are the reference implementation of VKG in version 0.1.
 
 ---
 
 ## 1. Overview
 
-ValidKernel Governance (VKG) is a structured governance framework designed to control AI-assisted and human-assisted system execution through deterministic commands and verifiable outcomes.
+ValidKernel Governance (VKG) is a deterministic governance system designed to control AI-assisted and human-assisted execution through governed commands and verifiable outcomes within Governed Environments.
 
 VKG provides a governance layer that ensures:
 
@@ -16,45 +16,59 @@ VKG provides a governance layer that ensures:
 - Bounded AI execution
 - Deterministic commit gates
 - Auditable execution records
-- Reproducible repository state
+- Reproducible state within Governed Environments
 - Portable governance identity
 - Runtime command enforcement
 
-VKG replaces unstructured prompts or instructions with governed commands that produce verifiable receipts and are indexed in a canonical registry.
+VKG replaces unstructured prompts or instructions with governed commands that produce verifiable receipts and are indexed in the Command Registry.
+
+Every governed action must follow the canonical VKG governance loop:
+
+```
+Authority → Command → Runtime Gate → Execution → Receipt → Command Registry → Verification
+```
+
+No governed action may execute without passing the Runtime Gate.
 
 ---
 
-## 2. Core Governance Model
+## 2. Governed Environment
 
-VKG is built around a six-stage governance lifecycle.
+A Governed Environment is a system in which commands may be issued, validated, executed, recorded, and verified under VKG governance rules.
 
-```
-Authority
-   ↓
-Instruction
-   ↓
-Runtime Gate
-   ↓
-Execution
-   ↓
-Receipt
-   ↓
-Verification
-```
+Examples of Governed Environments include:
 
-Each stage is represented by a VKG component.
+- Git repositories
+- CI/CD pipelines
+- infrastructure management systems
+- databases
+- AI execution environments
 
-The Runtime Gate ensures commands are validated and permitted before execution occurs.
+These examples are illustrative and do not imply runtime support in VKG v0.1.
+
+Git repositories are the reference implementation of VKG in version 0.1. All runtime tooling, registry structures, and receipt storage described in this specification operate within Git repository Governed Environments.
 
 ---
 
-## 3. VKG Components
+## 3. Core Governance Model
 
-### 3.1 Authority Layer
+VKG is built around the canonical governance loop:
+
+```
+Authority → Command → Runtime Gate → Execution → Receipt → Command Registry → Verification
+```
+
+Each stage is represented by a VKG component. The Runtime Gate ensures commands are validated and permitted before execution occurs. Governance behavior must be deterministic and auditable. FAIL_CLOSED semantics are preserved throughout: if validation fails or system state is uncertain, execution must not proceed.
+
+---
+
+## 4. VKG Components
+
+### 4.1 Authority Layer
 
 The Authority Layer defines the trusted source of commands.
 
-Authority is defined by L0 governance context.
+Authority is defined by L0 — Governance Context.
 
 Example:
 
@@ -67,17 +81,17 @@ The authority layer establishes:
 
 - Command ownership
 - Governance responsibility
-- Root trust for the repository
+- Root trust for the Governed Environment
 
-### 3.2 Portable Authority
+### 4.2 Portable Authority
 
-Portable Authority extends the Authority Layer by allowing governance identity to be portable across repositories, systems, and organizations.
+Portable Authority extends the Authority Layer by allowing governance identity to be portable across multiple Governed Environments.
 
-Instead of authority being tied to a single repository, VKG defines a Portable Authority Identity that can issue commands across multiple governed environments.
+Instead of authority being tied to a single Governed Environment, VKG defines a Portable Authority identity that can issue commands across multiple Governed Environments.
 
 Portable Authority enables:
 
-- Cross-repository governance
+- Cross-environment governance
 - Multi-system authority delegation
 - Portable governance identities
 - Distributed command issuance
@@ -112,26 +126,24 @@ Example file:
 .validkernel/authority/authority.json
 ```
 
-Portable Authority allows VKG systems to recognize the same governance authority across:
+Portable Authority allows VKG systems to recognize the same governance authority across multiple Governed Environments, including:
 
 - Multiple repositories
 - Distributed infrastructure
 - CI/CD systems
 - External partner systems
 
-Future versions may support cryptographically signed authority identities.
-
-### 3.3 Command Protocol
+### 4.3 Command Protocol
 
 Commands are structured instructions issued under the ValidKernel Command Protocol.
 
 Each command contains deterministic sections:
 
 ```
-L0 Governance Context
-Ring 1 — Mission Directive
-Ring 2 — Deterministic Commit Gate
-Ring 3 — Capability Bound
+L0 — Governance Context
+L1 — Mission Directive
+L2 — Deterministic Commit Gate
+L3 — Capability Bound
 Execution Notes (optional)
 End Command
 ```
@@ -143,13 +155,13 @@ Commands define:
 - Validation gates
 - Execution permissions
 
-Commands are fail-closed by design.
+Commands are fail-closed by design. Commands are the only authorized mechanism for initiating governed actions.
 
-### 3.4 ValidKernel Runtime Gate (VKRT)
+### 4.4 Runtime Gate
 
-The ValidKernel Runtime Gate (VKRT) is the enforcement layer that evaluates commands before execution.
+The Runtime Gate is the enforcement layer that evaluates commands before execution is permitted.
 
-VKRT ensures that commands satisfy governance rules and are authorized to run.
+The Runtime Gate determines whether execution may proceed by ensuring that commands satisfy governance rules and are authorized to run.
 
 The Runtime Gate performs:
 
@@ -157,11 +169,11 @@ The Runtime Gate performs:
 - Command structure validation
 - Capability boundary checks
 - Commit gate preconditions
-- Repository safety checks
+- Environment safety checks
 
 If any rule fails, execution is blocked.
 
-Example VKRT evaluation:
+Example Runtime Gate evaluation:
 
 ```
 if authority_valid
@@ -169,8 +181,9 @@ if authority_valid
    and capability_bounds_respected
    and runtime_environment_safe
 then
-   execution_allowed
+   gate_result = PASS
 else
+   gate_result = FAIL
    execution_blocked
 ```
 
@@ -179,19 +192,20 @@ When execution is blocked:
 ```
 status = BLOCKED
 gate_result = FAIL
-blocked_reason = VKRT rejection
+blocked_reason = Runtime Gate rejection
 ```
 
-VKRT may operate in:
+In VKG v0.1, the runtime gate is implemented by `runtime-gate.py`, which performs structural validation of command documents.
 
-- AI agents
-- CI/CD systems
-- Repository automation tools
-- Governance orchestration systems
+### 4.5 Execution Warrant
 
-VKRT ensures that commands cannot execute outside governance rules.
+An Execution Warrant is a narrow authorization permitting execution of a single governed command within defined capability bounds.
 
-### 3.5 Execution Layer
+In VKG v0.1, Runtime Gate PASS functions as the effective execution warrant. The execution warrant is a logical authorization produced by Runtime Gate PASS and does not require a separate artifact file.
+
+Execution may occur only after the Runtime Gate returns PASS and must occur only within the bounds defined by L3 — Capability Bound.
+
+### 4.6 Execution Layer
 
 Execution occurs when a command passes through the Runtime Gate and is interpreted by an execution agent.
 
@@ -202,9 +216,9 @@ Execution agents may include:
 - Automated tooling
 - CI pipelines
 
-Execution must respect the Capability Bound defined in Ring 3.
+Execution must respect the Capability Bound defined in L3.
 
-### 3.6 Command Receipts
+### 4.7 Command Receipts
 
 Every command execution produces a Command Receipt.
 
@@ -230,11 +244,11 @@ Example receipt file:
 .validkernel/receipts/L0-CMD-EXAMPLE-001.receipt.json
 ```
 
-Receipts provide a verifiable record of governance execution.
+Receipts provide a verifiable record of governance execution. Receipts are recorded in the Command Registry.
 
-### 3.7 Command Registry
+### 4.8 Command Registry
 
-The Command Registry is the canonical index of all commands and their lifecycle state.
+The Command Registry is the canonical index of all commands and their lifecycle state within a Governed Environment.
 
 Registry location:
 
@@ -250,6 +264,8 @@ The registry tracks:
 - Supersession relationships
 - Next actions
 
+Command Registry state reflects execution outcomes.
+
 This enables governance queries such as:
 
 - What commands exist?
@@ -259,27 +275,48 @@ This enables governance queries such as:
 
 ---
 
-## 4. Governance Rings
+## 5. Command Ring Structure
 
-VKG uses a ring model to separate responsibilities.
+VKG commands use a ring structure to separate concerns:
 
-| Ring | Role | Trust Level |
+```
+┌─────────────────────────────────────────┐
+│  L0 — Governance Context                │
+│  (Authority, ID, Date, Risk Class,      │
+│   Scope, Command Format)                │
+│  ┌───────────────────────────────────┐  │
+│  │  L1 — Mission Directive           │  │
+│  │  (Objective, Required Outcomes,   │  │
+│  │   Constraints, Non-goals)         │  │
+│  │  ┌─────────────────────────────┐  │  │
+│  │  │  L2 — Deterministic         │  │  │
+│  │  │       Commit Gate           │  │  │
+│  │  │  (Validation Checklist,     │  │  │
+│  │  │   Gate Rule)                │  │  │
+│  │  │  ┌───────────────────────┐  │  │  │
+│  │  │  │  L3 — Capability      │  │  │  │
+│  │  │  │       Bound           │  │  │  │
+│  │  │  │  (TOUCH-ALLOWED,      │  │  │  │
+│  │  │  │   NO-TOUCH,           │  │  │  │
+│  │  │  │   ENFORCEMENT MODE)   │  │  │  │
+│  │  │  └───────────────────────┘  │  │  │
+│  │  └─────────────────────────────┘  │  │
+│  └───────────────────────────────────┘  │
+└─────────────────────────────────────────┘
+```
+
+**Ring responsibilities:**
+
+| Ring | Role | Description |
 |------|------|-------------|
-| L0 | Human authority | Root |
-| L1 | Governance kernel | Trusted |
-| L2 | Execution agents | Untrusted |
-
-**Responsibilities:**
-
-- **L0** — Issues commands and defines authority.
-- **L1** — Defines governance rules, runtime gates, and validation policies.
-- **L2** — Performs execution within defined capability bounds.
-
-Portable Authority allows L0 identity to persist across multiple VKG environments.
+| L0 | Governance Context | Identifies authority, command ID, date, risk class, and scope |
+| L1 | Mission Directive | Defines objective, required outcomes, constraints, and non-goals |
+| L2 | Deterministic Commit Gate | Checklist of pass/fail conditions that must all be satisfied |
+| L3 | Capability Bound | Defines what the executor may and may not modify |
 
 ---
 
-## 5. Deterministic Commit Gates
+## 6. Deterministic Commit Gates
 
 Commit Gates enforce success criteria before a command can be declared complete.
 
@@ -303,7 +340,7 @@ This prevents premature completion.
 
 ---
 
-## 6. Capability Boundaries
+## 7. Capability Boundaries
 
 Capability boundaries restrict what execution agents can modify.
 
@@ -324,11 +361,11 @@ NO-TOUCH
 - deployment infrastructure
 ```
 
-This protects system stability.
+Enforcement mode is FAIL_CLOSED: if uncertain whether something is allowed, do not touch it.
 
 ---
 
-## 7. Command Lifecycle
+## 8. Command Lifecycle
 
 Commands move through defined lifecycle states.
 
@@ -350,52 +387,70 @@ Alternative paths:
 The lifecycle state is recorded in:
 
 - Command receipts
-- Command registry
+- Command Registry
 
 ---
 
-## 8. Governance File Structure
+## 9. Risk Classes
 
-A VKG-enabled repository typically contains:
+Every command must declare a Risk Class in its L0 — Governance Context section using the format:
+
+```
+Risk Class N (RCN)
+```
+
+Risk Classes range from RC0 (informational, no changes) to RC4 (critical, security or irreversible changes). See `risk-classes.md` for detailed definitions of each Risk Class.
+
+---
+
+## 10. Governance File Structure
+
+A VKG-enabled Governed Environment (Git repository in v0.1) typically contains:
 
 ```
 docs/
   validkernel/
     vkg-spec.md
     command-protocol.md
+    command-execution-flow.md
     command-receipts.md
     command-registry.md
+    governance-tools.md
+    glossary.md
+    risk-classes.md
     templates/
 
 .validkernel/
   authority/
   receipts/
   registry/
+  tools/
+  state/
 ```
 
 This structure separates governance metadata from application code.
 
 ---
 
-## 9. Repository Governance Rules
+## 11. Governance Rules
 
-Repositories using VKG should follow these principles:
+Governed Environments using VKG must follow these principles:
 
 1. Commands must follow the ValidKernel Command Protocol.
-2. Commands must pass the ValidKernel Runtime Gate (VKRT) before execution.
-3. Execution results should produce a Command Receipt.
-4. Commands should be indexed in the Command Registry.
-5. Receipts should reference the commit hash representing the executed state.
-6. Commands that replace earlier commands should mark them `SUPERSEDED`.
-7. Portable Authority identity should be defined in:
-
-```
-.validkernel/authority/authority.json
-```
+2. Commands must pass the Runtime Gate before execution.
+3. Execution may occur only after the Runtime Gate returns PASS.
+4. Execution must occur only within the bounds defined by L3 — Capability Bound.
+5. Every execution produces a Command Receipt.
+6. Receipts are recorded in the Command Registry.
+7. Command Registry state reflects execution outcomes.
+8. Governance behavior must be deterministic and auditable.
+9. FAIL_CLOSED semantics must be preserved.
+10. Commands that replace earlier commands should mark them `SUPERSEDED`.
+11. Portable Authority identity should be defined in `.validkernel/authority/authority.json`.
 
 ---
 
-## 10. Failure Handling
+## 12. Failure Handling
 
 When execution cannot complete, the execution agent must produce:
 
@@ -408,25 +463,28 @@ next_action = remediation
 
 The receipt must reflect the failure state.
 
+FAIL_CLOSED: if validation fails or system state is uncertain, execution must not proceed.
+
 ---
 
-## 11. Verification
+## 13. Verification
 
 Verification confirms that execution followed governance rules.
 
-Verification may include:
+Verification is performed by existing receipt validation and Command Registry consistency validation tooling as described by the current VKG documentation and tooling model.
 
-- Commit inspection
-- Receipt validation
-- Registry reconciliation
-- Authority identity verification
-- Runtime gate audit
+Verification includes:
 
-Future tooling may automate verification.
+- Receipt field completeness and validity checks
+- Registry consistency checks (receipt and registry agreement)
+- Command ID existence in the registry
+- Branch and commit hash agreement between receipt and registry
+
+Verification does not introduce a new runtime stage, lifecycle state, or execution step.
 
 ---
 
-## 12. Design Principles
+## 14. Design Principles
 
 VKG is designed around several principles.
 
@@ -436,31 +494,17 @@ VKG is designed around several principles.
 
 **Authority Traceability** — Command authority must be explicit and portable.
 
-**Runtime Safety** — Commands must pass runtime enforcement before execution.
+**Runtime Safety** — Commands must pass the Runtime Gate before execution.
 
 **AI Safety** — AI agents operate under bounded capability rules.
 
 **Simplicity** — Governance structures remain human-readable.
 
----
-
-## 13. Future Extensions
-
-Future VKG versions may introduce:
-
-- Cryptographic command signing
-- Automated receipt validation
-- Distributed command authorities
-- Portable governance identities
-- Cross-repository governance
-- Authority verification systems
-- Automated runtime gate engines
-
-These additions will extend VKG without breaking compatibility with v0.1.
+**FAIL_CLOSED** — If validation fails or system state is uncertain, execution must not proceed.
 
 ---
 
-## 14. Versioning
+## 15. Versioning
 
 This specification defines:
 
@@ -470,13 +514,13 @@ Future revisions should maintain backward compatibility where possible.
 
 ---
 
-## 15. Relationship to ValidKernel
+## 16. Relationship to ValidKernel
 
 VKG functions as the governance layer of ValidKernel systems.
 
 - **ValidKernel** defines the deterministic system kernel.
 - **VKG** defines the governance protocol controlling that kernel.
-- **VKRT** enforces governance decisions before execution occurs.
+- **Runtime Gate** enforces governance decisions before execution occurs.
 
 Together they form a system capable of managing complex AI-assisted development while maintaining deterministic authority and auditability.
 
@@ -489,10 +533,6 @@ This specification should be stored at:
 ```
 docs/validkernel/vkg-spec.md
 ```
-
-README example:
-
-> This repository implements ValidKernel Governance (VKG) v0.1.
 
 ---
 

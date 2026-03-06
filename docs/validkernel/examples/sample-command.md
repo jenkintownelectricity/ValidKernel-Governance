@@ -6,6 +6,7 @@ Authority: Example Authority
 Organization: Example Organization LLC
 Document ID: L0-CMD-EXAMPLE-001
 Date: 2026-01-01
+Risk Class: Risk Class 1 (RC1)
 Scope: Example scope for VKRT testing.
 
 Command Format: ValidKernel Command Protocol v0.1

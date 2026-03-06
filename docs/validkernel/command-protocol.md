@@ -5,32 +5,37 @@
 **Date:** 2026-03-05
 **Status:** Active
 
+The ValidKernel Command Protocol defines the structured format used to issue governed commands within ValidKernel Governance (VKG). Every command follows a deterministic ring structure consisting of L0 — Governance Context, L1 — Mission Directive, L2 — Deterministic Commit Gate, and L3 — Capability Bound. The protocol ensures that every governed action has clear authority, explicit scope, binary validation gates, hard capability limits, and an audit trail. Commands operate under FAIL_CLOSED enforcement: if any validation check is ambiguous or incomplete, execution halts.
+
 ---
 
 ## Purpose
 
-The ValidKernel Command Protocol defines a structured, deterministic format for issuing governance commands to AI agents and human operators. It ensures that every command has:
+The ValidKernel Command Protocol defines a structured, deterministic format for issuing governance commands to AI agents and human operators within Governed Environments. It ensures that every command has:
 
 - **Clear authority** — who is issuing the command and why
 - **Explicit scope** — what must be done, what must not be touched
+- **Risk classification** — the risk level of the governed action
 - **Deterministic validation** — a commit gate that passes or fails with no ambiguity
 - **Capability bounds** — hard limits on what the executor is allowed to modify
 - **Audit trail** — every command is numbered, tracked, and logged
 
 The protocol operates under a **FAIL_CLOSED** enforcement model: if any validation check is ambiguous or incomplete, execution halts. No silent passes. No assumed intent.
 
+Git repositories are the reference implementation of VKG in version 0.1.
+
 ---
 
-## Authority Rings
+## Command Ring Structure
 
 The protocol uses a layered ring model to separate concerns:
 
 | Ring | Name | Purpose |
 |------|------|---------|
-| Ring 0 | Governance Context | Identifies the authority, organization, command ID, date, and scope |
-| Ring 1 | Mission Directive | Defines the objective, required outcomes, and deliverables |
-| Ring 2 | Deterministic Commit Gate | A checklist of pass/fail conditions that must ALL be satisfied before completion |
-| Ring 3 | Capability Bound | Explicitly defines what the executor MAY and MAY NOT touch |
+| L0 | Governance Context | Identifies the authority, organization, command ID, date, risk class, and scope |
+| L1 | Mission Directive | Defines the objective, required outcomes, and deliverables |
+| L2 | Deterministic Commit Gate | A checklist of pass/fail conditions that must ALL be satisfied before completion |
+| L3 | Capability Bound | Explicitly defines what the executor MAY and MAY NOT touch |
 
 An optional **Execution Notes** section provides guidance, suggested language, or implementation hints.
 
@@ -48,11 +53,12 @@ L0 — GOVERNANCE CONTEXT
 Authority:     <Name>, <Role> — <Organization>
 Document ID:   <L0-CMD-YYYY-MMDD-NNN> or <descriptive ID>
 Date:          <YYYY-MM-DD>
+Risk Class:    Risk Class N (RCN)
 Scope:         <One-paragraph summary of what this command does>
 Command Format: ValidKernel Command Protocol v0.1
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 1 — MISSION DIRECTIVE
+L1 — MISSION DIRECTIVE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Objective:
@@ -71,7 +77,7 @@ Non-goals:
 - <Explicitly out of scope>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 2 — DETERMINISTIC COMMIT GATE
+L2 — DETERMINISTIC COMMIT GATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Validation Checklist:
@@ -86,7 +92,7 @@ Gate Result:
 PASS required before final response.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 3 — CAPABILITY BOUND
+L3 — CAPABILITY BOUND
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 TOUCH-ALLOWED:
@@ -114,17 +120,18 @@ END COMMAND
 
 ### L0 — Governance Context
 
-The header block. Establishes who, when, and what.
+The header block. Establishes who, when, what, and how risky.
 
 | Field | Required | Description |
 |-------|----------|-------------|
 | Authority | Yes | The person or entity issuing the command |
 | Document ID | Yes | Unique identifier for tracking and audit |
 | Date | Yes | ISO 8601 date of issuance |
+| Risk Class | Yes | Risk classification using format "Risk Class N (RCN)" where N is 0–4 |
 | Scope | Yes | One-paragraph summary of the command's purpose |
 | Command Format | Recommended | Protocol version declaration |
 
-### Ring 1 — Mission Directive
+### L1 — Mission Directive
 
 The body of the command. Defines what must happen.
 
@@ -135,7 +142,7 @@ The body of the command. Defines what must happen.
 | Constraints | Recommended | Boundaries on how the work is performed |
 | Non-goals | Recommended | Explicitly out-of-scope items to prevent scope creep |
 
-### Ring 2 — Deterministic Commit Gate
+### L2 — Deterministic Commit Gate
 
 The validation checkpoint. Binary pass/fail.
 
@@ -151,7 +158,7 @@ The validation checkpoint. Binary pass/fail.
 - The gate is atomic: ALL items must pass, or the command fails
 - Failed items must report the exact blocker, not a generic error
 
-### Ring 3 — Capability Bound
+### L3 — Capability Bound
 
 The permission model. Defines the blast radius.
 
@@ -176,10 +183,10 @@ Non-binding guidance for the executor. May include:
 1. **FAIL_CLOSED**: If any check is ambiguous, uncertain, or incomplete, the command fails. No silent passes.
 2. **No fabrication**: The executor must not claim completion of work that was not performed (e.g., "tests pass" when no tests were run).
 3. **No scope creep**: The executor must not perform work outside the Required Outcomes, even if it seems beneficial.
-4. **Atomic gate**: The Ring 2 checklist is all-or-nothing. Partial completion is a failure.
+4. **Atomic gate**: The L2 checklist is all-or-nothing. Partial completion is a failure.
 5. **Audit trail**: Every command execution must be logged with: command ID, branch, commit hash, files changed, and gate result.
 6. **Authority chain**: Only the declared Authority (or their delegate) may issue commands. The executor must not self-authorize new commands.
-7. **Capability enforcement**: Ring 3 bounds are hard limits. Touching a NO-TOUCH item is a protocol violation, not a judgment call.
+7. **Capability enforcement**: L3 bounds are hard limits. Touching a NO-TOUCH item is a protocol violation, not a judgment call.
 
 ---
 
@@ -193,11 +200,12 @@ L0 — GOVERNANCE CONTEXT
 Authority:     Armand Lefebvre, L0 — Lefebvre Design Solutions LLC
 Document ID:   L0-CMD-2026-0305-001
 Date:          2026-03-05
+Risk Class:    Risk Class 2 (RC2)
 Scope:         Add a health check banner to the dashboard view.
 Command Format: ValidKernel Command Protocol v0.1
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 1 — MISSION DIRECTIVE
+L1 — MISSION DIRECTIVE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Objective:
@@ -219,7 +227,7 @@ Non-goals:
 - No caching
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 2 — DETERMINISTIC COMMIT GATE
+L2 — DETERMINISTIC COMMIT GATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Validation Checklist:
@@ -236,7 +244,7 @@ Gate Rule:
 If any item fails → HALT and report exact blocker.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RING 3 — CAPABILITY BOUND
+L3 — CAPABILITY BOUND
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 TOUCH-ALLOWED:
