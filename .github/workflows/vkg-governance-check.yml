@@ -52,7 +52,14 @@ jobs:
             git fetch origin "${{ github.base_ref }}" --depth=1
             CHANGED_FILES=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
           else
-            CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+            BEFORE_SHA="${{ github.event.before }}"
+            # Guard against all-zero SHA (new branch push or unavailable before ref)
+            if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+              echo "Push before SHA is invalid ($BEFORE_SHA). Using HEAD~1 fallback."
+              CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only --diff-filter=ACMRT HEAD)
+            else
+              CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "${{ github.sha }}")
+            fi
           fi
 
           GOVERNANCE_CHANGED="false"
